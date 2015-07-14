@@ -1,6 +1,6 @@
 var app = {};
 app.init = function() {
-
+  var friendsList = [];
 };
 
 app.send = function(message) {
@@ -21,7 +21,7 @@ app.send = function(message) {
   });
 };
 
-app.fetch = function() {
+app.fetch = function(roomValue) {
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
     url: 'https://api.parse.com/1/classes/chatterbox',
@@ -39,11 +39,15 @@ app.fetch = function() {
         var message = escapeHtml(item.text);
         var cleanRoom = escapeHtml(item.roomname);
         rooms.push(cleanRoom);
-        $('#chats').append('<div>' + username + ':' + message + '</div>');
+        if (roomValue === undefined) {
+          $('#chats').append('<div class="chat">' + '<span class="username" id="user">' + username + '</span>' + ':' + message + '</div>');
+        } else if (roomValue === cleanRoom) {
+          $('#chats').append('<div class="chat">' + '<span class="username" id="user">' + username + '</span>' + ':' + message + '</div>');
+        }
       });
       var roomnames = _.uniq(rooms);
       _.each(roomnames, function(room) {
-        if (room) {
+        if (roomValue === undefined) {
           $('#roomSelect').append('<option value=' + room + '>' + room + '</option>');
         }
       });
@@ -70,7 +74,7 @@ app.addRoom = function(room) {
   $('#roomSelect').append('<div>' + room + '</div>');
 };
 
-app.addFriend = function() {
+app.addFriend = function(friend) {
 
 };
 
@@ -96,6 +100,14 @@ $(document).ready(function() {
     app.send(message);
     event.preventDefault();
   });
-
+  $('#roomSelect').change(function() {
+    var currentVal = $('#roomSelect').val();
+    $('#chats').html('');
+    app.fetch(currentVal);
+  });
+  // username onclick should addfriend to this user's friends list
+  $('#user').on('click', function() {
+    app.addFriend('#user');
+  });
 });
 
