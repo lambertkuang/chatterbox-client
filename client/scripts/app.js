@@ -98,6 +98,8 @@ $(document).ready(function() {
       roomname: '2'
     };
     app.send(message);
+    location.reload();
+    app.fetch();
     event.preventDefault();
   });
   $('#roomSelect').change(function() {
